@@ -1,0 +1,5 @@
+bin/boot_sect.bin
+bin/kernel_entry.o
+bin/kernel.bin
+bin/kernel.o
+bin/kernel.tmp
