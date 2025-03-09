@@ -1,3 +1,4 @@
+if not exist "bin" mkdir bin
 nasm boot/boot_sect.asm -f bin -o bin/boot_sect.bin
 gcc -ffreestanding  -m32 -c kernel/kernel.c -o bin/kernel.o
 nasm kernel/kernel_entry.asm -f elf -o bin/kernel_entry.o
