@@ -192,4 +192,9 @@ void initKeyboard()
     ps2_send_data(0x0);
     print_hex(ps2_read_data());*/
 }
+//A function to abstract reading a code from keyboard
+unsigned char getScanCode()
+{
+    return port_byte_in(0x60);
+}
 #endif

@@ -64,7 +64,6 @@ kernel_load_message:
 %include "boot/f_print_pm.asm"
 %include "boot/load_disk.asm"
 %include "boot/gdt.asm"
-times 510 -( $ - $$ ) db 0 ; When compiled , our program must fit into 512 bytes ,
-dw 0xaa55 ; Last two bytes ( one word ) form the magic number ,
-; so BIOS knows we are a boot sector.
+times 510 -( $ - $$ ) db 0 ; Pad the program for the magic number to be at the right space.
+dw 0xaa55 ; Bootsector magic number.
 times 512 db 0

@@ -4,6 +4,11 @@
 #include "scanset_2.h"
 #include "string_wrapper.h"
 #define CONSOLE_BUFFER 100
+//A simple function to print a blinking caret symbol
+void putCaretSymbol()
+{
+    putcStyled('_',0x8f);moveCaret(-1,0);
+}
 /*A function to read a command from input
 @param buffer the c-string intended as the command buffer
 @return the typed command bound within the string_w structure
@@ -19,19 +24,19 @@ string_w readCommand(char*buffer)
     {
         if(ps2_read_status().out_buffer!=0)
         {
-            key=port_byte_in(0x60);
-            if(key==KEY_RELEASED){while((ps2_read_status().out_buffer)==0);key=port_byte_in(0x60);key=0;continue;}
+            key=getScanCode();
+            if(key==KEY_RELEASED){while((ps2_read_status().out_buffer)==0);key=getScanCode();key=0;continue;}
             if(key==KEY_BACKSPACE&&pos>0)
             {
                 buffer[pos-1]=buffer[pos];
                 buffer[pos]='\0';
                 putc('\0');
                 moveCaret(-2,0);
-                putcStyled('_',0x8f);moveCaret(-1,0);
+                putCaretSymbol();
                 pos--;
             }
             buffer[pos]=testCharacter(key);
-            if(buffer[pos])putc(buffer[pos]);putcStyled('_',0x8f);moveCaret(-1,0);
+            if(buffer[pos])putc(buffer[pos]);putCaretSymbol();
             pos+=(buffer[pos]!=0);
         }
     }
@@ -42,7 +47,7 @@ string_w readCommand(char*buffer)
 void console()
 {
     char buffer[CONSOLE_BUFFER];
-    basic_print("\n>");putcStyled('_',0x8f);moveCaret(-1,0);
+    basic_print("\n>");putCaretSymbol();
     while(1)
     {
         string_w cmd={.begining=buffer,.end=buffer};
@@ -63,7 +68,7 @@ void console()
         else if(strcmp(buffer,"QUIT")==0)port_word_out(0xB004,0x2000);//Bochs specific.
         else if(strcmp(buffer,"RESTART")==0)ps2_send_commmand(0xFE);
         else basic_print("\nUnknown command! Type HELP for commands.");
-        basic_print("\n>");putcStyled('_',0x8f);moveCaret(-1,0);
+        basic_print("\n>");putCaretSymbol();
         continue;
     }
 }
