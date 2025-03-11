@@ -26,7 +26,7 @@ union ps2_type_transform
 void keyboardAwait()
 {
     asm("nop\nnop\nnop\n");
-    basic_print("    Out-wait start"); //putc(' '); print_hex(port_byte_in(0x64));
+    basic_print("    Out-wait start"); 
     while(port_byte_in(PS2_STATUS)&0b00000010==2)asm("nop\nnop\nnop\n");;
     basic_print("    Out-wait end\n");
 }
@@ -37,7 +37,7 @@ int keyboardAwaitIn()
 {
     unsigned n=0;
     asm("nop\nnop\nnop\n");
-    basic_print("    In-wait start"); putc(' '); //print_hex(port_byte_in(0x64));
+    basic_print("    In-wait start"); putc(' ');
     while((port_byte_in(PS2_STATUS)&0b00000001)==0&&n<1000)n++;
     if(n==1000)
     {
@@ -89,7 +89,6 @@ unsigned char ps2_read_data()
 struct ps2_status ps2_read_status()
 {
     return ((union ps2_type_transform)port_byte_in(PS2_STATUS)).b;
-    //return port_byte_in(PS2_STATUS);
 };
 /*Performs a self-test on the PS2 keyboard
 @return 0 if success, 1 if fail
@@ -158,6 +157,16 @@ void initPS2()
     ps2_send_compound_command(0x60,0b00010101);//Write controller configuration byte
     resetScreen();
 }
+//Function to get keyboard scanset
+//@return 1-scanset 1|  2-scanset 2 |   3-scanset 3 
+unsigned getScanSet()
+{
+    ps2_send_data(0xF0);
+    print_hex(ps2_read_data());
+    ps2_send_data(0x0);
+    print_hex(ps2_read_data());
+    return(ps2_read_data());
+}
 //Initializes the PS2 keyboard. Only call once.
 void initKeyboard()
 {
@@ -187,10 +196,7 @@ void initKeyboard()
     basic_print("12. Scanning enabled\n");
 
     /*Scan set test - result is 02
-    ps2_send_data(0xF0);
-    print_hex(ps2_read_data());
-    ps2_send_data(0x0);
-    print_hex(ps2_read_data());*/
+    */
 }
 //A function to abstract reading a code from keyboard
 unsigned char getScanCode()
