@@ -1,5 +1,6 @@
 #ifndef LOW_PRINT_H
 #define LOW_PRINT_H
+#include "low_io.h"
 #include "low_mem.h"
 #define VIDEO_MEMORY (char*)0xb8000
 int video_offset=0;
