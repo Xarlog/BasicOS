@@ -21,8 +21,7 @@ void cmd_restart();
 string_w readCommand(char*buffer)
 {
     *buffer='\0';
-    string_w res;
-    res.begining=buffer;
+    string_w res={.begining=buffer};
     int pos=0;
     unsigned char key=0;
     while(key!=KEY_ENTER&&pos<CONSOLE_BUFFER)
@@ -30,18 +29,21 @@ string_w readCommand(char*buffer)
         if(ps2_read_status().out_buffer!=0)
         {
             key=getScanCode();
-            if(key==KEY_RELEASED){while((ps2_read_status().out_buffer)==0);key=getScanCode();key=0;continue;}
+            if(key==KEY_RELEASED) { while((ps2_read_status().out_buffer)==0); key=getScanCode();key=0;continue;}
             if(key==KEY_BACKSPACE&&pos>0)
             {
-                buffer[pos-1]=buffer[pos];
-                buffer[pos]='\0';
-                putc('\0');
-                moveCaret(-2,0);
+                buffer[pos-1]=buffer[pos];//Move the caret symbol back
+                buffer[pos--]='\0';
+                putc('\0');//Erase the old caret
+                moveCaret(-1,0);
                 putCaretSymbol();
-                pos--;
             }
             buffer[pos]=testCharacter(key);
-            if(buffer[pos])putc(buffer[pos]);putCaretSymbol();
+            if(buffer[pos]) 
+            {
+                putc(buffer[pos]);
+                putCaretSymbol();
+            }
             pos+=(buffer[pos]!=0);
         }
     }
