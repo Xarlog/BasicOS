@@ -158,6 +158,7 @@ void initPS2()
     resetScreen();
 }
 //Function to get keyboard scanset
+//Assumes disabled translation
 //@return 1-scanset 1|  2-scanset 2 |   3-scanset 3 
 unsigned getScanSet()
 {

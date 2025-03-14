@@ -9,6 +9,11 @@ void putCaretSymbol()
 {
     putcStyled('_',0x8f);moveCaret(-1,0);
 }
+void cmd_echo(string_w);
+void cmd_clear();
+void cmd_help();
+void cmd_quit();
+void cmd_restart();
 /*A function to read a command from input
 @param buffer the c-string intended as the command buffer
 @return the typed command bound within the string_w structure
@@ -54,22 +59,38 @@ void console()
         cmd=readCommand(buffer);
         putc('\0'); putc('\n');
         if(compareStr_w(cmd,convertToWrapper("ECHO"))==0)
-        {
-            basic_print(cmd.end+1);
-        }
+            cmd_echo(cmd);
         else if(strcmp(buffer,"CLEAR")==0)
-        {
-            resetScreen();
-        }
+            cmd_clear();
         else if(strcmp(buffer,"HELP")==0)
-        {
-            basic_print("\nCLEAR - clears screen\nECHO <text> - prints following text\nHELP - prints help\nQUIT - poweroffs the device\nRESTART - restarts the system\n");
-        }
-        else if(strcmp(buffer,"QUIT")==0)port_word_out(0xB004,0x2000);//Bochs specific.
-        else if(strcmp(buffer,"RESTART")==0)ps2_send_commmand(0xFE);
+            cmd_help();
+        else if(strcmp(buffer,"QUIT")==0)
+            cmd_quit();
+        else if(strcmp(buffer,"RESTART")==0)
+            cmd_restart();
         else basic_print("\nUnknown command! Type HELP for commands.");
-        basic_print("\n>");putCaretSymbol();
+            basic_print("\n>");putCaretSymbol();
         continue;
     }
+}
+void cmd_echo(string_w cmd)
+{
+    basic_print(cmd.end+1);
+}
+void cmd_clear()
+{
+    resetScreen();
+}
+void cmd_help()
+{
+    basic_print("\nCLEAR - clears screen\nECHO <text> - prints following text\nHELP - prints help\nQUIT - poweroffs the device\nRESTART - restarts the system\n");
+}
+void cmd_quit()
+{
+    port_word_out(0xB004,0x2000);//Bochs specific.
+}
+void cmd_restart()
+{
+    ps2_send_commmand(0xFE);
 }
 #endif
