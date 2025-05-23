@@ -13,6 +13,17 @@ call switch_to_protected_mode
 jmp $;Loop in case of faults
 
 [bits 16]
+KERNEL_OFFSET equ 0x1000 ;Location of the kernel
+f_load_kernel:
+    mov bx, kernel_load_message
+    call f_print
+    mov bx,KERNEL_OFFSET
+    mov dh,54 ;Select 54 sectors
+    mov dl, 1 ;Select Disk 1
+    call f_disk_load ;Load the kernel to the space between 0x1000 and 0x7c00
+    ret
+
+[bits 16]
 ;Switch to protected mode
 switch_to_protected_mode:
     cli ;Neccessary disabling of interuppts
@@ -41,20 +52,10 @@ init_protected_mode:
     call f_print_pm
     call KERNEL_OFFSET
     jmp $
-
 [bits 16]
-KERNEL_OFFSET equ 0x1000 ;Location of the kernel
-f_load_kernel:
-    mov bx, kernel_load_message
-    call f_print
-    mov bx,KERNEL_OFFSET
-    mov dh,54 ;Load the kernel to the space between 0x1000 and 0x7c00
-    mov dl, 1
-    call f_disk_load
-    ret
-
+;String constants
 greeting:
-    db "Greetings from 16bit real mode! This is an absurdly simplistic and useless operating system." ,0xa,0xd,0
+    db "Greetings from 16bit real mode!" ,0xa,0xd,0
 greeting_pm:
     db "Greetings from 32bit protected mode!",0
 kernel_load_message:
@@ -64,6 +65,7 @@ kernel_load_message:
 %include "boot/f_print_pm.asm"
 %include "boot/load_disk.asm"
 %include "boot/gdt.asm"
+
 times 510 -( $ - $$ ) db 0 ; Pad the program for the magic number to be at the right space.
 dw 0xaa55 ; Bootsector magic number.
 times 512 db 0

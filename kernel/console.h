@@ -3,6 +3,7 @@
 #include "ps2.h"
 #include "scanset_2.h"
 #include "string_wrapper.h"
+#include "../driver/buzzer.h"
 #define CONSOLE_BUFFER 100
 //A simple function to print a blinking caret symbol
 void putCaretSymbol()
@@ -14,6 +15,8 @@ void cmd_clear();
 void cmd_help();
 void cmd_quit();
 void cmd_restart();
+void cmd_play(string_w);
+void cmd_stop();
 /*A function to read a command from input
 @param buffer the c-string intended as the command buffer
 @return the typed command bound within the string_w structure
@@ -30,7 +33,7 @@ string_w readCommand(char*buffer)
         {
             key=getScanCode();
             if(key==KEY_RELEASED) { while((ps2_read_status().out_buffer)==0); key=getScanCode();key=0;continue;}
-            if(key==KEY_BACKSPACE&&pos>0)
+            if(key==KEY_BACKSPACE&&pos>0)//Handle backspace
             {
                 buffer[pos-1]=buffer[pos];//Move the caret symbol back
                 buffer[pos--]='\0';
@@ -70,6 +73,10 @@ void console()
             cmd_quit();
         else if(strcmp(buffer,"RESTART")==0)
             cmd_restart();
+        else if(compareStr_w(cmd,convertToWrapper("PLAY"))==0)
+            cmd_play(cmd);
+        else if(strcmp(buffer,"STOP")==0)
+            cmd_stop();
         else basic_print("\nUnknown command! Type HELP for commands.");
             basic_print("\n>");putCaretSymbol();
         continue;
@@ -94,5 +101,13 @@ void cmd_quit()
 void cmd_restart()
 {
     ps2_send_commmand(0xFE);
+}
+void cmd_play(string_w cmd)
+{
+    playSound(1000);
+}
+void cmd_stop()
+{
+    stopSound();
 }
 #endif

@@ -31,11 +31,3 @@ f_print_hex:
     ret
 hex_vals:
     db "0123456789ABCDEF"
-;
-f_ping:
-    pusha
-    popa
-    mov ah, 0x0e
-    mov al, 'P'
-    int 0x10
-    ret
